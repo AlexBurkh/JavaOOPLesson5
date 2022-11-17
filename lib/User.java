@@ -8,7 +8,7 @@ public class User {
     private String password;
     private int salt;
 
-    private static Random rnd = new Random();
+    private static final Random rnd = new Random();
 
 
     // Constructors
