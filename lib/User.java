@@ -1,24 +1,16 @@
 package lib;
 
 import java.util.Objects;
-import java.util.Random;
 
 public class User {
     private String username;
-    private String password;
-    private int salt;
-
-    private static final Random rnd = new Random();
+    private int passwordHash;
 
 
     // Constructors
-    public User(String username, String password, int salt) {
+    public User(String username, int passwordHash) {
         this.username = username;
-        this.password = password;
-        this.salt = salt;
-    }
-    public User(String username, String password) {
-        this(username, password, rnd.nextInt());
+        this.passwordHash = passwordHash;
     }
 
 
@@ -27,8 +19,8 @@ public class User {
     public String toString() {
         return "User{" +
                 "username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", salt=" + salt +
+                ", password='" + passwordHash + '\'' +
+                ", salt=" +
                 '}';
     }
 
@@ -37,7 +29,7 @@ public class User {
         User another;
         if (o instanceof User) {
             another = (User) o;
-            return username.equals(another.username) && password.equals(another.password);
+            return username.equals(another.username);
         }
         return false;
     }
@@ -51,10 +43,7 @@ public class User {
     public String getUsername() {
         return username;
     }
-    public String getPassword() {
-        return password;
-    }
-    public int getSalt() {
-        return salt;
+    public int getPasswordHash() {
+        return passwordHash;
     }
 }
