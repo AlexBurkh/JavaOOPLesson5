@@ -37,7 +37,7 @@ public class User {
         User another;
         if (o instanceof User) {
             another = (User) o;
-            return salt == another.salt && username.equals(another.username) && password.equals(another.password);
+            return username.equals(another.username) && password.equals(another.password);
         }
         return false;
     }
