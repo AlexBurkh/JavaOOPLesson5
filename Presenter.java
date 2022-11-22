@@ -1,32 +1,34 @@
-import Models.UserStorage;
+import Models.*;
 import Views.View;
-
 import Views.ConsoleView;
-import Models.HashSetUserStorage;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Presenter {
     private UserStorage userStorage;
     private View ui;
     private Map<Integer, String> menuPoints;
+    private HashAuthenticator authenticator;
 
 
-
-    public Presenter(UserStorage userStorage, View ui, Map<Integer, String> menuPoints) {
+    public Presenter(UserStorage userStorage, View ui, Map<Integer, String> menuPoints, HashAuthenticator authenticator) {
         this.userStorage = userStorage;
         this.ui = ui;
         this.menuPoints = menuPoints;
+        this.authenticator = authenticator;
+        if (menuPoints.size() <= 0) {
+            menuPoints.put(1, "Вход");
+            menuPoints.put(2, "Регистрация");
+            menuPoints.put(3, "Выход");
+        }
+    }
+    public Presenter(View ui, Map<Integer, String> menuPoints, HashAuthenticator authenticator) {
+        this(new HashSetUserStorage(authenticator), ui, menuPoints, authenticator);
     }
 
     public Presenter() {
-        this(new HashSetUserStorage(), new ConsoleView(), new HashMap<>());
-        menuPoints.put(1, "Вход");
-        menuPoints.put(2, "Регистрация");
-        menuPoints.put(3, "Выход");
+        this(new ConsoleView(), new HashMap<>(), new EmbeddedHashAuthenticator());
     }
 
     void start() {
@@ -38,7 +40,7 @@ public class Presenter {
                 case 1 -> {
                     var username = ui.getLine("Введите имя пользователя: ");
                     var password = ui.getLine("Введите пароль: ");
-                    if (authenticate(username, password)) {
+                    if (authenticator.authenticate(userStorage.findUser(username).getPasswordHash(), password)) {
                         ui.println("Поздравляю, аутентификация пройдена");
                     } else {
                         ui.println("Неудачная попытка аутентификации");
@@ -64,13 +66,5 @@ public class Presenter {
                 }
             }
         }
-    }
-
-    boolean authenticate(String username, String password) {
-        int hash = userStorage.hashPassword(password);
-        if (userStorage.findUser(username).getPasswordHash() == hash) {
-            return true;
-        }
-        return false;
     }
 }

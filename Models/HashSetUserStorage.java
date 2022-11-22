@@ -1,29 +1,30 @@
 package Models;
 
-import lib.User;
-
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
 public class HashSetUserStorage implements UserStorage {
     private Set<User> users;
+    private HashAuthenticator authenticator;
 
 
     // Constructors
-    public HashSetUserStorage(Set<User> users) {
+    public HashSetUserStorage(Set<User> users, HashAuthenticator authenticator) {
         this.users = users;
+        this.authenticator = authenticator;
     }
 
-    public HashSetUserStorage() {
+    public HashSetUserStorage(HashAuthenticator authenticator) {
         this.users = new HashSet<>();
+        this.authenticator = new EmbeddedHashAuthenticator();
     }
 
 
     // Override
     @Override
     public boolean addUser(String username, String cleartextPassword) {
-        int hash = hashPassword(cleartextPassword);
+        int hash = authenticator.hash(cleartextPassword);
         User u = new User(username, hash);
         if (users.add(u)) {
             return true;
@@ -46,11 +47,5 @@ public class HashSetUserStorage implements UserStorage {
     @Override
     public User[] getUsers() {
         return (User[]) users.toArray();
-    }
-
-
-    // Methods
-    public int hashPassword(String cleartextPassword) {
-        return Objects.hash(cleartextPassword);
     }
 }
